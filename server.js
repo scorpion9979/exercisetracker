@@ -44,7 +44,7 @@ var userSchema = new Schema({
   _id: {type: String, required: true},
   username: {type: String, required: true},
   count: {type: Number, default: 0},
-  log: [{description: String, duration: Number, date: Date}]
+  log: [{description: String, duration: Number, date: Date, _id: false}]
 },
 {
   usePushEach: true
