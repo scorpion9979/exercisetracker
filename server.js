@@ -64,7 +64,7 @@ app.post("/api/exercise/new-user", function (req, res) {
       });
     } else {
       // user already exist
-      res.send({_id: doc._id, username: doc.username});
+      res.send("username already taken");
     }
   });
 });
