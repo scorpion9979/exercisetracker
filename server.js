@@ -115,6 +115,31 @@ app.post("/api/exercise/add", function (req, res) {
   });
 });
 
+app.get("/api/exercise/log", function (req, res) {
+  let userId = req.query.userId,
+      from = req.query.from?new Date(req.query.from):null,
+      to = req.query.to?new Date(req.query.to):null,
+      limit = req.query.limit?parseInt(req.query.limit):null;
+  Model.findOne({_id: userId}, function (err, doc) {
+    if(doc == null) {
+      // user doesn't exist
+      res.send("unknown userId");
+    } else {
+      // user exists
+      let dateBound = 8640000000000000;
+      let filteredLog = doc.log.filter(e=>e.date >= (from?from:new Date(-dateBound)) &&
+                                          e.date <= (to?to:new Date(dateBound)))
+                                .slice(0, limit?limit:doc.log.length);
+      let response = {_id: doc._id, username: doc.username,
+                      from: from?from.toDateString():null,
+                      to: to?to.toDateString():null,
+                      count: filteredLog.length,
+                      log: filteredLog};
+      res.send(JSON.stringify(response, (k, v)=>{if(v) return v;}));
+    }
+  });
+});
+
 // Not found middleware
 app.use((req, res, next) => {
   return next({status: 404, message: 'not found'})
