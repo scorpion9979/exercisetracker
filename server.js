@@ -129,6 +129,7 @@ app.get("/api/exercise/log", function (req, res) {
       let dateBound = 8640000000000000;
       let filteredLog = doc.log.filter(e=>e.date >= (from?from:new Date(-dateBound)) &&
                                           e.date <= (to?to:new Date(dateBound)))
+                                .map(e=>({description: e.description, duration: e.duration, date: e.date.toDateString()}))
                                 .slice(0, limit?limit:doc.log.length);
       let response = {_id: doc._id, username: doc.username,
                       from: from?from.toDateString():null,
