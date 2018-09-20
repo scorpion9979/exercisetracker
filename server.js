@@ -43,6 +43,15 @@ app.use((err, req, res, next) => {
     .send(errMessage)
 })
 
+var Schema = mongoose.Schema;
+var userSchema = new Schema({
+  _id: {type: String, required: true},
+  username: {type: String, required: true},
+  count: {type: Number, default: 0},
+  log: [{description: String, duration: Number, date: Date}]
+});
+var Model = mongoose.model("Model", userSchema);
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
