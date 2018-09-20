@@ -45,6 +45,9 @@ var userSchema = new Schema({
   username: {type: String, required: true},
   count: {type: Number, default: 0},
   log: [{description: String, duration: Number, date: Date}]
+},
+{
+  usePushEach: true
 });
 var Model = mongoose.model("Model", userSchema);
 
@@ -81,6 +84,35 @@ app.get("/api/exercise/users", function (req, res) {
       res.send(response)
     }
   })
+});
+
+app.post("/api/exercise/add", function (req, res) {
+  let userId = req.body.userId;
+  let description = req.body.description;
+  let duration = parseInt(req.body.duration);
+  let date = req.body.date?new Date(req.body.date):new Date();
+  Model.findOne({_id: userId}, function (err, doc) {
+    if(doc == null) {
+      res.send("unknown _id");
+    } else {
+      if(!description) {
+        res.send("Path `description` is required.");
+      } else if(!duration) {
+        res.send("Path `duration` is required.");
+      } else {
+        doc.log.push({description: description, duration: duration, date: date});
+        doc.count++;
+        doc.save(function (err, doc) {
+          if(err) {
+            console.log(err);
+          } else {
+            res.send({_id: doc._id, username: doc.username, description: doc.log[doc.count-1]["description"],
+                      duration: doc.log[doc.count-1]["duration"], date: doc.log[doc.count-1]["date"].toDateString()});
+          }
+        })
+      }
+    }
+  });
 });
 
 // Not found middleware
