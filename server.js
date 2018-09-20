@@ -19,10 +19,6 @@ app.get('/', (req, res) => {
 });
 
 
-// Not found middleware
-app.use((req, res, next) => {
-  return next({status: 404, message: 'not found'})
-})
 
 // Error Handling middleware
 app.use((err, req, res, next) => {
@@ -51,6 +47,32 @@ var userSchema = new Schema({
   log: [{description: String, duration: Number, date: Date}]
 });
 var Model = mongoose.model("Model", userSchema);
+
+app.post("/api/exercise/new-user", function (req, res) {
+  let username = req.body.username;
+  Model.findOne({username: username}, function (err, doc) {
+    if(doc == null) {
+      // user doesn't already exist
+      let _id = (new mongoose.mongo.ObjectId()).toHexString();
+      let user = new Model({_id: _id, username: username});
+      user.save(function (err, doc) {
+        if(err) {
+          console.log(err);
+        } else {
+          res.send({_id: doc._id, username: doc.username});
+        }
+      });
+    } else {
+      // user already exist
+      res.send({_id: doc._id, username: doc.username});
+    }
+  });
+});
+
+// Not found middleware
+app.use((req, res, next) => {
+  return next({status: 404, message: 'not found'})
+})
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
