@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 
 const mongoose = require('mongoose')
-mongoose.connect(process.env.MLAB_URI || 'mongodb://scorpion9979:ahwedvcx314@ds161092.mlab.com:61092/exercisetracker' )
+mongoose.connect(process.env.MLAB_URI)
 
 app.use(cors())
 
